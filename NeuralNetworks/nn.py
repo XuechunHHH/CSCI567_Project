@@ -5,6 +5,7 @@ from analysis import get_trials_summary, plot_trials
 import seaborn as sn
 import matplotlib.pyplot as plt
 
+# each layer of the neural network as an object
 class Layer:
     def __init__(self, input_size, output_size, lr=0.005):
         self.weights = np.random.normal(0, 0.1, size=(input_size, output_size))
@@ -27,12 +28,15 @@ class Layer:
         self.weights -= X.T @ grad * self.lr
         self.biases = np.sum(grad, axis=0) * self.lr
 
+
+# activation functions
+# TODO: could use inheritance
 class Activation:
-    def __init__(self, func='ReLu'):
+    def __init__(self, func='ReLu', n_slope=0.2):
         if func == 'ReLu':
             self.func = ReLu()
         elif func == 'LeakyReLu':
-            self.func = LeakyReLu()
+            self.func = LeakyReLu(n_slope_=n_slope)
         elif func == 'Sigmoid':
             self.func = Sigmoid()
         else:
@@ -55,23 +59,45 @@ class ReLu:
         return pz * grad
 
 class LeakyReLu:
+    def __init__(self, n_slope_):
+        self.n_slope = n_slope_
+
+    def leakyRelu(self, x):
+        if x > 0:
+            return x
+        else:
+            return x * self.n_slope
+        
+    def derivative(self, x):
+        if x > 0:
+            return 1
+        else:
+            return self.n_slope
+
     # forward pass
     def forward(self, X):
-        pass
+        l = np.vectorize(self.leakyRelu)
+        return l(X)
 
     # back propogation
-    def backprop(self):
-        pass
+    def backprop(self, X, grad):
+        d = np.vectorize(self.derivative)
+        return d(X) * grad
 
 class Sigmoid:
     # forward pass
     def forward(self, X):
-        pass
+        return self.sigmoid(X)
 
     # back propogation
-    def backprop(self):
-        pass
+    def backprop(self, X, grad):
+        return self.sigmoid(X) * (1 - self.sigmoid(X)) * grad
 
+    def sigmoid(self, X):
+        X = X.astype('float64')
+        return 1 / (1 + np.exp(-X))
+
+# the softmax function as an object
 class Softmax:
     # forward pass
     def forward(self, X, y):
@@ -90,7 +116,8 @@ class Softmax:
         y_expand = np.zeros_like(self.p)
         y_expand[range(len(y)), y.flatten()] = 1
         return self.p - y_expand
-    
+
+# the neural network algorithm as an object
 class NeuralNetwork(Algorithm):
     def __init__(self, input_size, l1, l2, output_size, lr=0.005):
         self.layer1 = Layer(input_size, l1, lr)
@@ -124,13 +151,14 @@ def main():
     validation_label = validation_label.flatten()
     testing_label = testing_label.flatten()
 
+    # defining the structure of the neural network
     input_size = len(training_data[0])
-
-    num_trials = 30
-
     l1 = 10
     l2 = 6
     output_size = 3
+
+    num_trials = 30
+  
     lr = 0.005
 
     num_epochs_set = [10, 20, 30, 40, 50]
