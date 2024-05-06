@@ -1,7 +1,7 @@
 import pandas as pd
 
 def preprocess_data():
-    df_train, df_val, df_test = pd.read_csv("train.csv"), pd.read_csv("val.csv"), pd.read_csv("test.csv")
+    df_train, df_val, df_test = pd.read_csv("../Data/train.csv"), pd.read_csv("../Data/val.csv"), pd.read_csv("../Data/test.csv")
     
     training_data, training_label = get_np_data(df_train)
     validation_data, validation_label = get_np_data(df_val)

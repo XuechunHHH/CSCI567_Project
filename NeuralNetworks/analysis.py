@@ -18,7 +18,10 @@ def plot_trials(avg, std, num_epochs_set):
     plt.plot(range(len(avg)), avg[:, 0])
     plt.plot(range(len(avg)), avg[:, 1])
     plt.xticks(range(len(num_epochs_set)), num_epochs_set)
-    plt.legend(["training set", "test set"])
+    plt.legend(["training set", "validation set"])
+    plt.xlabel('Epoch')
+    plt.ylabel('Accuracy')
+    plt.ylim(0, 1.0)
     plt.show()
 
     if std is not None:
@@ -27,5 +30,8 @@ def plot_trials(avg, std, num_epochs_set):
         plt.plot(range(len(std)), std[:, 0])
         plt.plot(range(len(std)), std[:, 1])
         plt.xticks(range(len(num_epochs_set)), num_epochs_set)
-        plt.legend(["training set", "test set"])
+        plt.legend(["training set", "validation set"])
+        plt.xlabel('Epoch')
+        plt.ylabel('Accuracy')
+        plt.ylim(0, 1.0)
         plt.show()

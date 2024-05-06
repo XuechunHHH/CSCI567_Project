@@ -33,6 +33,8 @@ class Algorithm:
             matrix[predictions[i]][label[i]] += 1
 
         sn.heatmap(matrix, annot=True)
+        plt.xlabel("Actual Label")
+        plt.ylabel("Predicted Label")
         plt.show()
 
     def get_metrics(self, data, label):
